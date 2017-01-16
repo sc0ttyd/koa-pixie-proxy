@@ -1,6 +1,6 @@
-#koa2-pixie-proxy
+#koa2-pixie-proxy [![Build Status](https://travis-ci.org/sc0ttyd/koa2-pixie-proxy.svg?branch=master)](https://travis-ci.org/sc0ttyd/koa2-pixie-proxy)
 
-A dirt-simple composable [koa2](https://github.com/koajs/koa) proxy.
+A simple but flexible proxy middlware for [koa2](https://github.com/koajs/koa).
 Forked from koa-pixie-proxy due to lack of support for Koa2.
 
 ## Installation
