@@ -1,3 +1,15 @@
+v2.0.0 - Mon, 16 Jan 2017 15:22:00 GMT
+--------------------------------------
+
+- [652de32](../../commit/652de32) Initial commit of fork to koa2-pixie-proxy  
+ - refactor code to work with koa2
+ - refactor tests to use koa2
+ - update deps
+ - update docs
+ - add .travis.yml
+ - add yarn.lock
+
+
 v1.0.7 - Tue, 07 Jul 2015 15:28:13 GMT
 --------------------------------------
 

@@ -1,60 +1,59 @@
-var request = require('co-request');
-var replacePathParams = require('./lib/replace');
-var debug = require('debug')('koa-pixie-proxy');
+const request = require('request-promise');
+const replacePathParams = require('./lib/replace');
+const debug = require('debug')('koa2-pixie-proxy');
 
-var hasColons = /:/;
+const hasColons = /:/;
 
-function pixie(options) {
-  return function proxy(path, encoding) {
-    var shouldReplacePathParams = hasColons.test(path);
+module.exports = options => (path, encoding) => {
+    const shouldReplacePathParams = hasColons.test(path);
 
-    return function* (next) {
-      var self = this;
+    return (ctx, next) => {
 
-      var requestOpts = {
-        url: options.host + (path || this.url),
-        method: this.method,
-        headers: this.headers,
-        qs: this.query,
-        encoding: encoding
-      };
+        const requestOpts = {
+            url: options.host + (path || ctx.url),
+            method: ctx.method,
+            headers: ctx.headers,
+            qs: ctx.query,
+            encoding,
+            resolveWithFullResponse: true
+        };
 
-      // if we have dynamic segments in the url
-      if (shouldReplacePathParams) {
-        requestOpts.url = options.host + replacePathParams(path, this.params);
-      }
-
-      // something possibly went wrong if they have no body but are sending a
-      // put or a post
-      if ((requestOpts.method == 'POST' || requestOpts.method == 'PUT')) {
-
-        if (!this.request.body) {
-          console.warn('sending PUT or POST but no request body found');
-        } else {
-          requestOpts.body = this.request.body;
+        // if we have dynamic segments in the url
+        if (shouldReplacePathParams) {
+            requestOpts.url = options.host + replacePathParams(path, ctx.params);
         }
 
-        // make request allow js objects if we are sending json
-        if (this.request.type == 'application/json') {
-          requestOpts.json = true;
+        // something possibly went wrong if they have no body but are sending a
+        // put or a post
+        if (['POST', 'PUT'].includes(requestOpts.method)) {
+
+            if (!ctx.request.body) {
+                console.warn('sending PUT or POST but no request body found');
+            } else {
+                requestOpts.body = ctx.request.body;
+            }
+
+            // make request allow js objects if we are sending json
+            if (ctx.request.type === 'application/json') {
+                requestOpts.json = true;
+            }
         }
 
-      }
+        debug('proxying request with options', requestOpts);
 
-      debug('proxying request with options', requestOpts);
+        return request(requestOpts)
+            .then(({ statusCode, body, headers }) => {
 
-      var response = yield request(requestOpts);
+                // Proxy over response headers
+                Object.keys(headers).forEach(h => ctx.set(h, headers[h]));
 
-      // Proxy over response headers
-      Object.keys(response.headers).forEach(function(h) {
-        self.set(h, response.headers[h]);
-      });
-      this.status = response.statusCode;
-      this.body = response.body;
+                ctx.status = statusCode;
+                ctx.body = body;
 
-      yield next;
+                return next();
+            })
+            .catch(({ statusCode }) => {
+                ctx.status = statusCode || 500;
+            });
     }
-  }
-}
-
-module.exports = pixie;
+};
