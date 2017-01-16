@@ -1,22 +1,22 @@
-#pixie-proxy
+#koa2-pixie-proxy
 
-A dirt-simple composable [koajs](https://github.com/koajs/koa) proxy.
+A dirt-simple composable [koa2](https://github.com/koajs/koa) proxy.
+Forked from koa-pixie-proxy due to lack of support for Koa2.
 
 ## Installation
 
 ```bash
-npm i --save koa-pixie-proxy
+npm i --save koa2-pixie-proxy
 ```
-
 
 ## Usage
 
 ```JavaScript
-var pixie = require('koa-pixie-proxy');
-var koa = require('koa');
-var router = require('koa-router');
+const pixie = require('koa2-pixie-proxy');
+const Koa = require('koa');
+const router = require('koa-router');
 
-var app = koa();
+const app = new Koa();
 app.use(router(app));
 
 var proxy = pixie({host: 'http://example.com'});
@@ -32,14 +32,14 @@ app.get('some/:param/here/:id', proxy('someother/:param/maybesomethingelse/:id/d
 app.post('/foobar', proxy());
 ```
 
-To allow later middleware to modify the response, `koa-pixie-proxy` will
+To allow later middleware to modify the response, `koa2-pixie-proxy` will
 set response headers, status and body but won't actually send the result to the
 client. This means you give up nice proxy pipelining, but you can do things like
 modify the result of a proxy like this:
 
 ```JavaScript
-app.get('/hurp', proxy('/durp'), function*() {
+app.get('/hurp', proxy('/durp'), (ctx) => {
   // add a property to the body already proxied
-  this.body.beans = 'baz'
+  ctx.body.beans = 'baz';
 });
 ```
