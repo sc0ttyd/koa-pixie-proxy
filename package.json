@@ -4,7 +4,8 @@
   "description": "A simple but flexible proxy middlware for koa2",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --harmony -R dot test/*"
+    "test": "mocha test/*",
+    "test:watch": "npm test -- --watch"
   },
   "keywords": [
     "koa",
