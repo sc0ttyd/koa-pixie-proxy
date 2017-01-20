@@ -42,13 +42,15 @@ module.exports = options => (path, encoding) => {
         debug('proxying request with options', requestOpts);
 
         return request(requestOpts)
-            .then(({ statusCode, body, headers }) => {
+            .then(response => {
 
                 // Proxy over response headers
-                Object.keys(headers).forEach(h => ctx.set(h, headers[h]));
+                Object.keys(response.headers).forEach(
+                    h => ctx.set(h, response.headers[h])
+                );
 
-                ctx.status = statusCode;
-                ctx.body = body;
+                ctx.status = response.statusCode;
+                ctx.body = response.body;
 
                 return next();
             })
