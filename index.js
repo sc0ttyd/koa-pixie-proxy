@@ -54,8 +54,9 @@ module.exports = options => (path, encoding) => {
 
                 return next();
             })
-            .catch(({ statusCode }) => {
-                ctx.status = statusCode || 500;
+            .catch(err => {
+                ctx.body = err.reason;
+                ctx.status = err.statusCode || 500;
             });
     }
 };
