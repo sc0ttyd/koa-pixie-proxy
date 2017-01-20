@@ -25,7 +25,7 @@ module.exports = options => (path, encoding) => {
 
         // something possibly went wrong if they have no body but are sending a
         // put or a post
-        if (['POST', 'PUT'].includes(requestOpts.method)) {
+        if (requestOpts.method === 'POST' || requestOpts.method === 'PUT') {
 
             if (!ctx.request.body) {
                 console.warn('sending PUT or POST but no request body found');
@@ -42,18 +42,21 @@ module.exports = options => (path, encoding) => {
         debug('proxying request with options', requestOpts);
 
         return request(requestOpts)
-            .then(({ statusCode, body, headers }) => {
+            .then(response => {
 
                 // Proxy over response headers
-                Object.keys(headers).forEach(h => ctx.set(h, headers[h]));
+                Object.keys(response.headers).forEach(
+                    h => ctx.set(h, response.headers[h])
+                );
 
-                ctx.status = statusCode;
-                ctx.body = body;
+                ctx.status = response.statusCode;
+                ctx.body = response.body;
 
                 return next();
             })
-            .catch(({ statusCode }) => {
-                ctx.status = statusCode || 500;
+            .catch(err => {
+                ctx.body = err.reason;
+                ctx.status = err.statusCode || 500;
             });
     }
 };
