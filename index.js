@@ -25,7 +25,7 @@ module.exports = options => (path, encoding) => {
 
         // something possibly went wrong if they have no body but are sending a
         // put or a post
-        if (['POST', 'PUT'].includes(requestOpts.method)) {
+        if (requestOpts.method === 'POST' || requestOpts.method === 'PUT') {
 
             if (!ctx.request.body) {
                 console.warn('sending PUT or POST but no request body found');
