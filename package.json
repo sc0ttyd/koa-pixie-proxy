@@ -24,7 +24,7 @@
   "dependencies": {
     "debug": "^2.6.0",
     "path-to-regexp": "^1.7.0",
-    "request": "^2.79.0",
+    "request": "^2.85.0",
     "request-promise": "^4.0.2"
   },
   "devDependencies": {
