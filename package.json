@@ -25,7 +25,7 @@
     "debug": "^2.6.0",
     "path-to-regexp": "^1.7.0",
     "request": "^2.79.0",
-    "request-promise": "^4.0.2"
+    "request-promise": "^4.2.4"
   },
   "devDependencies": {
     "koa": "^2.0.0",
